@@ -1,0 +1,65 @@
+프로젝트 실행 준비 가이드
+
+1. Python 버전
+- Python 3.11 이상이 필요합니다.
+
+2. 가상환경 생성
+```bash
+uv venv .venv
+source .venv/bin/activate
+```
+
+3. 의존성 설치
+```bash
+uv sync
+```
+
+설명:
+- `uv sync`를 실행하면 `pyproject.toml`과 `uv.lock` 기준으로 필요한 패키지가 설치됩니다.
+- 현재 이 프로젝트는 최소한 `reportlab` 등이 설치되어 있어야 import 및 실행이 가능합니다.
+
+4. 환경변수 파일 생성
+```bash
+cp .env.example .env
+```
+
+5. `.env` 파일에 API 키 입력
+`.env` 파일을 열어서 아래 값을 채워야 합니다.
+
+필수 값:
+- `OPENAI_API_KEY`
+- `TAVILY_API_KEY`
+
+예시:
+```env
+OPENAI_API_KEY=your_openai_api_key
+TAVILY_API_KEY=your_tavily_api_key
+```
+
+설명:
+- `OPENAI_API_KEY`: 보고서 초안 생성, 리뷰, 최종 보고서 편집, 임베딩 생성에 사용됩니다.
+- `TAVILY_API_KEY`: 경쟁사 관련 최신 웹 검색 결과 수집에 사용됩니다.
+
+6. 실행 방법
+가상환경이 활성화된 상태에서 아래 둘 중 하나로 실행할 수 있습니다.
+
+방법 1:
+```bash
+uv run semiconductor-strategy
+```
+
+방법 2:
+```bash
+python app.py
+```
+
+7. 실행 결과물
+실행이 완료되면 아래 파일이 생성되거나 갱신됩니다.
+- `outputs/tech_strategy_report.md`
+- `outputs/ai-mini_output.pdf`
+- `outputs/evidence_traceability.json`
+
+8. 주의사항
+- `.env`에 키가 없으면 실행 중 API 호출 단계에서 실패합니다.
+- 의존성이 설치되지 않으면 `reportlab` 등의 모듈 import 단계에서 실패할 수 있습니다.
+- 네트워크 접근이 가능한 환경이어야 OpenAI 및 Tavily API 호출이 정상 동작합니다.
