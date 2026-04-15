@@ -8,8 +8,8 @@ from typing import Any
 
 from .config import (
     EMBEDDING_CANDIDATES,
+    EMBEDDING_MODEL,
     ENV_CANDIDATES,
-    OPENAI_EMBEDDING_MODEL,
     OPENAI_MODEL,
     TAVILY_API_URL,
     log_progress,
@@ -101,7 +101,7 @@ def call_openai_json(*, system_prompt: str, user_prompt: str) -> dict[str, Any]:
     )
 
 
-def call_openai_embeddings(texts: list[str], *, model: str = OPENAI_EMBEDDING_MODEL) -> list[list[float]]:
+def call_openai_embeddings(texts: list[str], *, model: str = EMBEDDING_MODEL) -> list[list[float]]:
     if not texts:
         return []
     log_progress("Embedding", f"Batch embedding request start: model={model} count={len(texts)}")

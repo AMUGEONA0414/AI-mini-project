@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .config import GENERATION_EVAL_OUTPUT_PATH, GOLD_REPORT_PATH, OPENAI_EMBEDDING_MODEL
+from .config import GENERATION_EVAL_OUTPUT_PATH, GOLD_REPORT_PATH, EMBEDDING_MODEL
 from .retrieval import cosine_similarity, get_embeddings
 from .text import compact_text
 
@@ -161,7 +161,7 @@ def quality_criteria_checks(*, report_text: str, report_sections: dict[str, str]
     return {"passed": all(item["passed"] for item in checks.values()), "checks": checks}
 
 
-def evaluate_generated_report(state: dict[str, Any], *, model: str = OPENAI_EMBEDDING_MODEL) -> dict[str, Any]:
+def evaluate_generated_report(state: dict[str, Any], *, model: str = EMBEDDING_MODEL) -> dict[str, Any]:
     report_text = state.get("final_report_markdown", "")
     gold_text = GOLD_REPORT_PATH.read_text(encoding="utf-8")
     report_sections = split_report_sections(report_text)

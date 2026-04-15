@@ -121,10 +121,10 @@ COMPANY_DISPLAY_NAMES = {
     "SK hynix": "SK하이닉스",
 }
 OPENAI_MODEL = "gpt-4.1-mini"
-OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_MODEL = "bge_m3"
 RETRIEVAL_STRATEGIES = ("dense", "lexical", "hybrid")
 EMBEDDING_CANDIDATES = [
-    {"provider": "openai", "model": "text-embedding-3-small", "status": "active", "reason": "최종 선정된 임베딩 모델"},
+    {"provider": "openai", "model": "bge_m3", "status": "active", "reason": "최종 선정된 임베딩 모델"},
 ]
 TAVILY_API_URL = "https://api.tavily.com/search"
 RETRIEVAL_EVALSET_PATH = EVAL_ROOT / "retrieval_evalset.json"
@@ -190,7 +190,7 @@ def initialize_state(
         embedding_benchmarks={},
         generation_eval={},
         selected_retrieval_strategy="hybrid",
-        embedding_model=OPENAI_EMBEDDING_MODEL,
+        embedding_model=EMBEDDING_MODEL,
         embedding_candidates=EMBEDDING_CANDIDATES,
         checkpoint_path="",
         run_notes=[],

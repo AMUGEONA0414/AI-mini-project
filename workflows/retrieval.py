@@ -17,7 +17,7 @@ from .config import (
     EVAL_ROOT,
     MIN_RETRIEVAL_EVAL_QUERIES,
     MIN_WEB_TRUST_SCORE,
-    OPENAI_EMBEDDING_MODEL,
+    EMBEDDING_MODEL,
     RAG_CHUNK_OVERLAP,
     RAG_CHUNK_SIZE,
     RAG_TOP_K,
@@ -272,7 +272,7 @@ def call_embedding_batch(texts: list[str], *, model: str, input_type: str = "doc
     raise RuntimeError(f"지원하지 않는 embedding provider: {provider} ({model})")
 
 
-def get_embeddings(texts: list[str], *, model: str = OPENAI_EMBEDDING_MODEL, input_type: str = "document") -> dict[str, list[float]]:
+def get_embeddings(texts: list[str], *, model: str = EMBEDDING_MODEL, input_type: str = "document") -> dict[str, list[float]]:
     EMBEDDING_CACHE_ROOT.mkdir(parents=True, exist_ok=True)
     results: dict[str, list[float]] = {}
     uncached_texts: list[str] = []
@@ -303,7 +303,7 @@ def cosine_similarity(left: list[float], right: list[float]) -> float:
     return numerator / (left_norm * right_norm)
 
 
-def compute_retrieval_metrics(documents: list[dict[str, object]], *, chunked_corpus: list[dict[str, object]] | None = None, chunk_embeddings: dict[str, list[float]] | None = None, embedding_model: str = OPENAI_EMBEDDING_MODEL) -> dict[str, object]:
+def compute_retrieval_metrics(documents: list[dict[str, object]], *, chunked_corpus: list[dict[str, object]] | None = None, chunk_embeddings: dict[str, list[float]] | None = None, embedding_model: str = EMBEDDING_MODEL) -> dict[str, object]:
     log_progress("RAG", "Computing retrieval metrics")
     ensure_retrieval_evalset()
     evalset = json.loads(RETRIEVAL_EVALSET_PATH.read_text(encoding="utf-8"))
@@ -377,7 +377,7 @@ def benchmark_embedding_models(*, documents: list[dict[str, object]], chunked_co
     if not candidates:
         raise RuntimeError("실행 가능한 embedding candidate가 없습니다.")
     benchmarks: dict[str, object] = {}
-    best_model = OPENAI_EMBEDDING_MODEL
+    best_model = EMBEDDING_MODEL
     best_key = (-1.0, -1.0)
     for candidate in candidates:
         model = candidate["model"]
