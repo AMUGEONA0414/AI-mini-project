@@ -1,4 +1,4 @@
-# Semiconductor Strategy Agent
+# AI-mini-project
 
 SK하이닉스 관점에서 HBM4, PIM, CXL 경쟁사 위협을 분석하고 보고서를 생성하는 Supervisor 기반 워크플로우입니다.
 
