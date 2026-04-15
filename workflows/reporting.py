@@ -246,7 +246,9 @@ def rule_based_review_checks(draft: str) -> list[str]:
         issues.append("TRL 추정 한계 명시 부족")
     summary_match = re.search(r"## SUMMARY\s+(.+?)(?:\n## |\Z)", draft, flags=re.DOTALL)
     if summary_match:
-        sentence_count = len(re.findall(r"[.!?다]\s*", compact_text(summary_match.group(1))))
+        summary_text = compact_text(summary_match.group(1))
+        sentence_parts = [part.strip() for part in re.split(r"(?<=[.!?])\s+|(?<=다\.)\s+|(?<=다)\s+", summary_text) if part.strip()]
+        sentence_count = len(sentence_parts)
         if sentence_count > 10:
             issues.append("SUMMARY 10문장 초과")
     else:
