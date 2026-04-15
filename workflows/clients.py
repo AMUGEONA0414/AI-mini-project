@@ -6,7 +6,7 @@ import urllib.error
 import urllib.request
 from typing import Any
 
-from .semiconductor_strategy_config import (
+from .config import (
     EMBEDDING_CANDIDATES,
     ENV_CANDIDATES,
     OPENAI_EMBEDDING_MODEL,
@@ -15,7 +15,7 @@ from .semiconductor_strategy_config import (
     log_progress,
     retry_with_backoff,
 )
-from .semiconductor_strategy_text import strip_markdown_fence
+from .text import strip_markdown_fence
 
 
 def require_openai_api_key() -> str:

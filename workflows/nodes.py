@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
-from .semiconductor_strategy_shared import *
+from .shared import *
 
 
 def supervisor_node(state: WorkflowState) -> dict[str, Any]:

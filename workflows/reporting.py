@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .semiconductor_strategy_config import (
+from .config import (
     A4,
     OUTPUT_ROOT,
     Paragraph,
@@ -23,8 +23,8 @@ from .semiconductor_strategy_config import (
     mm,
     pdfmetrics,
 )
-from .semiconductor_strategy_sources import format_reference_entry, format_web_reference_entry, load_document_by_path, source_label_from_state
-from .semiconductor_strategy_text import compact_text, confidence_label, sanitize_markdown_for_pdf, threat_label, strip_table_markup
+from .sources import format_reference_entry, format_web_reference_entry, load_document_by_path, source_label_from_state
+from .text import compact_text, confidence_label, sanitize_markdown_for_pdf, threat_label, strip_table_markup
 
 
 def infer_table_col_widths(rows: list[list[str]], available_width: float) -> list[float]:

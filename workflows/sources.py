@@ -5,8 +5,8 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from .semiconductor_strategy_config import PDF_CACHE_ROOT, WorkflowState
-from .semiconductor_strategy_text import compact_text
+from .config import PDF_CACHE_ROOT, WorkflowState
+from .text import compact_text
 
 
 def parse_document(path: Path) -> dict[str, Any]:

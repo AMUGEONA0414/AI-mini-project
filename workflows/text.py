@@ -4,6 +4,15 @@ import re
 from datetime import date
 
 
+def display_company_name(company: str) -> str:
+    company_map = {
+        "Samsung Electronics": "삼성전자",
+        "Micron": "마이크론",
+        "SK hynix": "SK하이닉스",
+    }
+    return company_map.get(company, company)
+
+
 def tokenize(text: str) -> list[str]:
     return re.findall(r"[a-z0-9\-\+]+", text.lower())
 

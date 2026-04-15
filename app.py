@@ -1,4 +1,4 @@
-from workflows.semiconductor_strategy_workflow import OUTPUT_ROOT, run_demo
+from workflows.workflow import OUTPUT_ROOT, run_demo
 
 
 def main() -> int:
