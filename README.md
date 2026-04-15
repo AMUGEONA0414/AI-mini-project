@@ -81,6 +81,7 @@ flowchart TD
 ```text
 ├── data/                  # PDF documents for local RAG corpus
 ├── evaluation/            # retrieval_evalset.json, gold_report.md
+├── notebooks/             # Development-stage notebooks with Best Embedding Model Selection (08)
 ├── outputs/               # generated report, traceability, generation evaluation
 ├── workflows/             # workflow, agents, retrieval, reporting, evaluation modules
 ├── app.py                 # execution script
