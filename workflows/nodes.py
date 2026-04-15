@@ -65,8 +65,9 @@ def rag_agent_node(state: WorkflowState) -> dict[str, Any]:
     selected_strategy = retrieval_metrics.get("strategy", "hybrid")
     retrieval_benchmarks = retrieval_metrics.get("benchmarks", {})
     query_texts = {
-        tech: f"{state['user_query']} {tech} {display_company_name(state['focal_company'])}"
-        for tech in state["target_technologies"]
+        "HBM4": f"HBM4 memory packaging thermal validation roadmap {display_company_name(state['focal_company'])}",
+        "PIM": f"PIM processing-in-memory AiM architecture survey research trend {display_company_name(state['focal_company'])}",
+        "CXL": f"CXL compute express link memory expansion ecosystem standard direction {display_company_name(state['focal_company'])}",
     }
     query_embedding_map = get_embeddings(
         list(query_texts.values()),
@@ -153,7 +154,11 @@ def web_search_agent_node(state: WorkflowState) -> dict[str, Any]:
         future_map = {executor.submit(_job_runner, job): job for job in jobs}
         for future in as_completed(future_map):
             tech, company, signal_type, query = future_map[future]
-            results = future.result()[1]
+            try:
+                results = future.result()[1]
+            except Exception as exc:
+                log_progress("WebSearch", f"Search failed for {tech} / {display_company_name(company)} / {signal_type}: {exc}")
+                continue
             if not results:
                 continue
             for rank, result in enumerate(results, start=1):
