@@ -50,9 +50,11 @@ def infer_table_col_widths(rows: list[list[str]], available_width: float) -> lis
         if "주요 차별점 및 특징" in plain:
             weights[idx] *= 1.8
         elif "SK하이닉스 대응 포인트" in plain:
-            weights[idx] *= 1.15
+            weights[idx] *= 1.55
         elif "기술 동향" in plain:
             weights[idx] *= 1.35
+        elif "삼성전자 위협 수준" in plain or "마이크론 위협 수준" in plain or "삼성전자 위협도" in plain or "마이크론 위협도" in plain:
+            weights[idx] *= 1.02
         elif plain == "기술":
             weights[idx] *= 0.82
         elif plain == "회사":
@@ -65,14 +67,20 @@ def infer_table_col_widths(rows: list[list[str]], available_width: float) -> lis
         min_widths = [14 * mm, 16 * mm, 30 * mm, 18 * mm, 18 * mm, 24 * mm]
         max_widths = [19 * mm, 24 * mm, 68 * mm, 24 * mm, 24 * mm, 52 * mm]
     elif max_columns == 5:
-        min_widths = [16 * mm, 16 * mm, 26 * mm, 18 * mm, 26 * mm]
-        max_widths = [22 * mm, 20 * mm, 20 * mm, 90 * mm, 42 * mm]
+        min_widths = [14 * mm, 17 * mm, 17 * mm, 46 * mm, 38 * mm]
+        max_widths = [18 * mm, 22 * mm, 22 * mm, 76 * mm, 62 * mm]
     else:
         base_min = available_width / max_columns * 0.6
         base_max = available_width / max_columns * 1.6
         min_widths = [base_min] * max_columns
         max_widths = [base_max] * max_columns
     widths = [max(min_widths[i], min(widths[i], max_widths[i])) for i in range(max_columns)]
+    if max_columns == 5 and header:
+        threat_headers = [strip_table_markup(cell) for cell in header]
+        if len(threat_headers) >= 3 and any("삼성전자 위협" in threat_headers[i] for i in range(len(threat_headers))) and any("마이크론 위협" in threat_headers[i] for i in range(len(threat_headers))):
+            threat_width = (widths[1] + widths[2]) / 2
+            widths[1] = threat_width
+            widths[2] = threat_width
     remainder = available_width - sum(widths)
     widths[-1] += remainder
     return widths
@@ -181,11 +189,58 @@ def build_competitor_analysis_table(state: WorkflowState) -> str:
     return "\n".join(rows)
 
 
+def _clean_comparison_feature_text(text: str) -> str:
+    cleaned = sanitize_markdown_for_pdf(text)
+    cleaned = cleaned.replace("<br/>", " ").replace("<br>", " ")
+    cleaned = re.sub(r"^#+\s*", "", cleaned).strip()
+    cleaned = re.sub(r"^[\"'“”‘’]+|[\"'“”‘’]+$", "", cleaned).strip()
+    cleaned = compact_text(cleaned)
+    for delimiter in [" / ", " · ", " | ", "; "]:
+        if delimiter in cleaned:
+            cleaned = cleaned.split(delimiter, 1)[0].strip()
+    if ", " in cleaned:
+        cleaned = cleaned.split(", ", 1)[0].strip()
+    cleaned = re.sub(r"^(Samsung Unveils|Micron vs\.|Tech News:|Week \d+, \d{4}\s*-\s*|Applied Materials and Micron Partner To)\s*", "", cleaned, flags=re.IGNORECASE).strip()
+    replacements = {
+        "HBM4E": "AI 특화 HBM4E 공개",
+        "CXL Roadmap": "CXL 로드맵·샘플 공개",
+        "Applied Materials와 협력해 AI 메모리 혁신 추진": "미국 내 AI 메모리 협력",
+        "Applied Materials and Micron Partner": "미국 내 AI 메모리 협력",
+        "TrendForce 뉴스 중심 생태계 구축 노력": "패키징·생태계 강화",
+        "Micron vs. SK Hynix HBM technology roadmap to 2026": "HBM 로드맵 추격",
+    }
+    for source, target in replacements.items():
+        if source.lower() in cleaned.lower():
+            return target
+    if len(cleaned) > 28:
+        cleaned = cleaned[:28].rstrip() + "..."
+    return cleaned or "핵심 신호 재점검"
+
+
 def build_comparison_table(state: WorkflowState) -> str:
     rows = []
+    grouped: dict[str, dict[str, Any]] = {}
     for item in state.get("competitor_analysis_rows", []):
-        company = item["company"] if item["company"] not in {"Samsung Electronics", "Micron"} else ("삼성전자" if item["company"] == "Samsung Electronics" else "마이크론")
-        rows.append(f"| {company} | {item['technology']} | {item['estimated_trl']} | {threat_label(item['threat_level'])} | {item['key_evidence']} | 공개 자료 기반 추정 |")
+        tech = item["technology"]
+        company = "삼성전자" if item["company"] == "Samsung Electronics" else "마이크론" if item["company"] == "Micron" else item["company"]
+        grouped.setdefault(tech, {"threats": {}, "features": {}, "response": ""})
+        grouped[tech]["threats"][company] = threat_label(item["threat_level"])
+        grouped[tech]["features"][company] = _clean_comparison_feature_text(item["technology_trend"])
+        if not grouped[tech]["response"]:
+            guidance_map = {
+                "HBM4": "패키징·수율·고객 검증 모니터링",
+                "PIM": "생태계·적용 워크로드 검증",
+                "CXL": "표준 대응·플랫폼 통합 준비",
+            }
+            grouped[tech]["response"] = guidance_map.get(tech, "핵심 경쟁 신호 재점검")
+    for tech in state.get("target_technologies", []):
+        item = grouped.get(tech, {"threats": {}, "features": {}, "response": "핵심 경쟁 신호 재점검"})
+        samsung_threat = item["threats"].get("삼성전자", "중간")
+        micron_threat = item["threats"].get("마이크론", "중간")
+        samsung_feature = item["features"].get("삼성전자", "핵심 신호 재점검")
+        micron_feature = item["features"].get("마이크론", "핵심 신호 재점검")
+        feature_block = f"삼성전자: {samsung_feature}<br/>마이크론: {micron_feature}"
+        rows.append(f"| {tech} | {samsung_threat} | {micron_threat} | {feature_block} | {item['response']} |")
     return "\n".join(rows)
 
 
@@ -196,15 +251,19 @@ def build_compact_comparison_guidance(state: WorkflowState) -> str:
         grouped.setdefault(tech, {"threats": {}, "features": []})
         company = item["company"] if item["company"] not in {"Samsung Electronics", "Micron"} else ("삼성전자" if item["company"] == "Samsung Electronics" else "마이크론")
         grouped[tech]["threats"][company] = threat_label(item["threat_level"])
-        grouped[tech]["features"].append(f"{company}: {item['technology_trend'].split(',')[0].strip()}")
+        grouped[tech]["features"].append(f"{company}: {_clean_comparison_feature_text(item['technology_trend'])}")
     guidance_map = {"HBM4": "패키징, 수율, 고객 검증 집중 모니터링", "PIM": "생태계 확보와 적용 워크로드 검증", "CXL": "표준 대응과 플랫폼 통합 준비 강화"}
     lines = []
     for tech in state["target_technologies"]:
         item = grouped.get(tech, {"threats": {}, "features": []})
         samsung = item["threats"].get("삼성전자", "중간")
         micron = item["threats"].get("마이크론", "중간")
-        feature_text = compact_text(" / ".join(item["features"][:2]))
-        lines.append(f"- {tech}: 삼성전자 위협도={samsung}, 마이크론 위협도={micron}, 주요 차별점='{feature_text}', 대응='{guidance_map.get(tech, '핵심 경쟁 신호 재점검')}'")
+        feature_lines = item["features"][:2]
+        feature_text = "<br/>".join(compact_text(feature) for feature in feature_lines if feature)
+        lines.append(
+            f"- {tech}: 삼성전자 위협 수준={samsung}, 마이크론 위협 수준={micron}, "
+            f"주요 차별점 및 특징='{feature_text}', 대응='{guidance_map.get(tech, '핵심 경쟁 신호 재점검')}'"
+        )
     return "\n".join(lines)
 
 
