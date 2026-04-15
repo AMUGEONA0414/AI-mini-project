@@ -15,6 +15,7 @@ from .config import (
     EMBEDDING_CACHE_ROOT,
     EMBEDDING_CANDIDATES,
     EVAL_ROOT,
+    MIN_RETRIEVAL_EVAL_QUERIES,
     MIN_WEB_TRUST_SCORE,
     OPENAI_EMBEDDING_MODEL,
     RAG_CHUNK_OVERLAP,
@@ -69,12 +70,26 @@ def infer_document_technology(doc: dict[str, object]) -> str:
     title = str(doc["metadata"].get("title", doc["name"])).lower()
     body = str(doc.get("body", "")).lower()[:12000]
     haystack = f"{title} {body}"
-    if "hbm4" in haystack or "next-gen hbm" in haystack or "hybrid bonding" in haystack:
-        return "HBM4"
-    if any(token in haystack for token in ["processing-in-memory", "pim", "aimx", "gddr6-aim", "aim "]):
-        return "PIM"
-    if any(token in haystack for token in ["compute express link", "cxl"]):
-        return "CXL"
+    scores = {
+        "HBM4": 0,
+        "PIM": 0,
+        "CXL": 0,
+    }
+    if "hbm4" in haystack:
+        scores["HBM4"] += 4
+    if "next-gen hbm" in haystack or "hybrid bonding" in haystack or "thermal" in haystack or "packaging" in haystack:
+        scores["HBM4"] += 2
+    if any(token in haystack for token in ["processing-in-memory", " pim ", "pim-", "aimx", "gddr6-aim"]):
+        scores["PIM"] += 4
+    if any(token in haystack for token in ["survey", "primer"]) and any(token in haystack for token in ["processing-in-memory", "pim"]):
+        scores["PIM"] += 2
+    if any(token in haystack for token in ["compute express link", " cxl ", "cxl 2.0", "cxl 3.0"]):
+        scores["CXL"] += 4
+    if any(token in haystack for token in ["memory expansion", "ecosystem", "industry-standard", "coherency"]) and "cxl" in haystack:
+        scores["CXL"] += 2
+    best_technology = max(scores, key=scores.get)
+    if scores[best_technology] > 0:
+        return best_technology
     return str(doc["metadata"].get("technology", ""))
 
 
@@ -270,12 +285,19 @@ def compute_retrieval_metrics(documents: list[dict[str, object]], *, chunked_cor
                 hits += 1
                 reciprocal_sum += 1.0 / matched_rank
         benchmarks[strategy] = {"hit_rate_at_k": round(hits / evaluated, 3) if evaluated else 0.0, "mrr": round(reciprocal_sum / evaluated, 3) if evaluated else 0.0, "queries": evaluated, "k": RAG_TOP_K}
+    insufficient_evalset = len(evalset) < MIN_RETRIEVAL_EVAL_QUERIES
     selected_strategy = max(RETRIEVAL_STRATEGIES, key=lambda name: (benchmarks[name]["mrr"], benchmarks[name]["hit_rate_at_k"]))
+    if insufficient_evalset:
+        selected_strategy = "hybrid"
     metrics = dict(benchmarks[selected_strategy])
     metrics["strategy"] = selected_strategy
     metrics["embedding_model"] = embedding_model
     metrics["benchmarks"] = benchmarks
+    metrics["insufficient_evalset"] = insufficient_evalset
+    metrics["evalset_size"] = len(evalset)
     log_progress("RAG", "Retrieval metrics ready: " + ", ".join(f"{name}=HitRate@{benchmarks[name]['k']} {benchmarks[name]['hit_rate_at_k']}, MRR {benchmarks[name]['mrr']}" for name in RETRIEVAL_STRATEGIES) + f" | selected={selected_strategy}")
+    if insufficient_evalset:
+        log_progress("RAG", f"Evalset has only {len(evalset)} queries; benchmark result is informative but not production-grade.")
     return metrics
 
 
