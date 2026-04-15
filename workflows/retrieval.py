@@ -171,6 +171,8 @@ def rank_documents_for_strategy(*, strategy: str, query_text: str, technology: s
 
 
 def build_retrieval_evalset() -> list[dict[str, object]]:
+    if RETRIEVAL_EVALSET_PATH.exists():
+        return json.loads(RETRIEVAL_EVALSET_PATH.read_text(encoding="utf-8"))
     return [
         {
             "query": "HBM4 packaging and thermal challenge overview",
@@ -181,12 +183,59 @@ def build_retrieval_evalset() -> list[dict[str, object]]:
             ],
         },
         {
+            "query": "hybrid bonding yield thermal bottleneck next generation stacked memory",
+            "technology": "HBM4",
+            "expected_titles": [
+                "Hybrid Bonding Expands from Logic to Memory_ SK Hynix, Applied Materials, BESI Drive Co-optimization to Scale Next-gen HBM"
+            ],
+        },
+        {
+            "query": "12 layer high bandwidth memory sample supply validation roadmap",
+            "technology": "HBM4",
+            "expected_titles": ["HBM4", "12단 샘플 공급"],
+        },
+        {
+            "query": "mass production readiness for next generation high bandwidth memory",
+            "technology": "HBM4",
+            "expected_titles": ["HBM4", "양산 체제 구축"],
+        },
+        {
             "query": "PIM survey and architecture research trends",
             "technology": "PIM",
             "expected_titles": ["2012.03112v5", "2105.03814v7"],
         },
         {
+            "query": "processing in memory survey taxonomy architecture research trend",
+            "technology": "PIM",
+            "expected_titles": ["2012.03112v5", "2105.03814v7"],
+        },
+        {
+            "query": "near memory compute accelerator AiM product demonstration",
+            "technology": "PIM",
+            "expected_titles": ["hot_chips_2024_aimx_presentation", "GDDR6-AiM", "AiMX"],
+        },
+        {
+            "query": "GDDR6 based memory accelerator card generative AI prototype",
+            "technology": "PIM",
+            "expected_titles": ["GDDR6-AiM", "AiMX", "hot_chips_2024_aimx_presentation"],
+        },
+        {
             "query": "CXL memory expansion ecosystem and standard direction",
+            "technology": "CXL",
+            "expected_titles": ["2306.11227v3", "2412.20249v2"],
+        },
+        {
+            "query": "compute express link memory pooling disaggregation data center survey",
+            "technology": "CXL",
+            "expected_titles": ["2306.11227v3", "2412.20249v2"],
+        },
+        {
+            "query": "CXL 2.0 DDR5 customer certification memory expansion product",
+            "technology": "CXL",
+            "expected_titles": ["CXL 2.0", "sk_hynix_cxl_product_intro"],
+        },
+        {
+            "query": "memory expansion coherency interconnect standard future directions",
             "technology": "CXL",
             "expected_titles": ["2306.11227v3", "2412.20249v2"],
         },
@@ -263,7 +312,7 @@ def compute_retrieval_metrics(documents: list[dict[str, object]], *, chunked_cor
     if chunk_embeddings is None:
         embedding_map = get_embeddings([item["text"] for item in chunked_corpus], model=embedding_model, input_type="document")
         chunk_embeddings = {item["chunk_id"]: embedding_map[item["text"]] for item in chunked_corpus}
-    query_texts = [f"{row['query']} {row['technology']}" for row in evalset]
+    query_texts = [row["query"] for row in evalset]
     query_embedding_map = get_embeddings(query_texts, model=embedding_model, input_type="query")
     benchmarks: dict[str, object] = {}
     for strategy in RETRIEVAL_STRATEGIES:
@@ -271,7 +320,7 @@ def compute_retrieval_metrics(documents: list[dict[str, object]], *, chunked_cor
         reciprocal_sum = 0.0
         evaluated = 0
         for row in evalset:
-            query_text = f"{row['query']} {row['technology']}"
+            query_text = row["query"]
             query_embedding = query_embedding_map[query_text] if strategy != "lexical" else None
             ranked_docs = rank_documents_for_strategy(strategy=strategy, query_text=query_text, technology=row["technology"], chunked_corpus=chunked_corpus, chunk_embeddings=chunk_embeddings, doc_lookup=doc_lookup, query_embedding=query_embedding, limit=RAG_TOP_K)
             evaluated += 1

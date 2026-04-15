@@ -2,25 +2,151 @@
   {
     "query": "HBM4 packaging and thermal challenge overview",
     "technology": "HBM4",
-    "expected_titles": [
-      "Hybrid Bonding Expands from Logic to Memory_ SK Hynix, Applied Materials, BESI Drive Co-optimization to Scale Next-gen HBM",
-      "HBM4"
-    ]
+    "expected_titles": ["Hybrid Bonding Expands from Logic to Memory_ SK Hynix, Applied Materials, BESI Drive Co-optimization to Scale Next-gen HBM", "HBM4"]
+  },
+  {
+    "query": "hybrid bonding yield thermal bottleneck next generation stacked memory",
+    "technology": "HBM4",
+    "expected_titles": ["Hybrid Bonding Expands from Logic to Memory_ SK Hynix, Applied Materials, BESI Drive Co-optimization to Scale Next-gen HBM"]
+  },
+  {
+    "query": "12 layer high bandwidth memory sample supply validation roadmap",
+    "technology": "HBM4",
+    "expected_titles": ["HBM4", "12"]
+  },
+  {
+    "query": "mass production readiness for next generation high bandwidth memory",
+    "technology": "HBM4",
+    "expected_titles": ["HBM4", "양산"]
+  },
+  {
+    "query": "co optimization logic to memory hybrid bonding HBM scaling",
+    "technology": "HBM4",
+    "expected_titles": ["Hybrid Bonding Expands from Logic to Memory"]
+  },
+  {
+    "query": "thermal management and packaging process for stacked DRAM bandwidth scaling",
+    "technology": "HBM4",
+    "expected_titles": ["Hybrid Bonding Expands from Logic to Memory", "HBM4"]
+  },
+  {
+    "query": "SK hynix next generation HBM sample supply customer qualification",
+    "technology": "HBM4",
+    "expected_titles": ["HBM4", "샘플"]
+  },
+  {
+    "query": "HBM3E transition to HBM4 production competitiveness",
+    "technology": "HBM4",
+    "expected_titles": ["HBM3E", "HBM4"]
+  },
+  {
+    "query": "high bandwidth memory roadmap AI accelerator package validation",
+    "technology": "HBM4",
+    "expected_titles": ["HBM4", "Hybrid Bonding Expands from Logic to Memory"]
+  },
+  {
+    "query": "memory stack interconnect pitch bonding and heat challenge",
+    "technology": "HBM4",
+    "expected_titles": ["Hybrid Bonding Expands from Logic to Memory", "HBM4"]
   },
   {
     "query": "PIM survey and architecture research trends",
     "technology": "PIM",
-    "expected_titles": [
-      "2012.03112v5",
-      "2105.03814v7"
-    ]
+    "expected_titles": ["2012.03112v5", "2105.03814v7"]
+  },
+  {
+    "query": "processing in memory survey taxonomy architecture research trend",
+    "technology": "PIM",
+    "expected_titles": ["2012.03112v5", "2105.03814v7"]
+  },
+  {
+    "query": "near memory compute accelerator AiM product demonstration",
+    "technology": "PIM",
+    "expected_titles": ["hot_chips_2024_aimx_presentation", "GDDR6-AiM", "AiMX"]
+  },
+  {
+    "query": "GDDR6 based memory accelerator card generative AI prototype",
+    "technology": "PIM",
+    "expected_titles": ["GDDR6-AiM", "AiMX", "hot_chips_2024_aimx_presentation"]
+  },
+  {
+    "query": "processing near data movement bottleneck neural network acceleration",
+    "technology": "PIM",
+    "expected_titles": ["2012.03112v5", "2105.03814v7"]
+  },
+  {
+    "query": "PIM architecture for AI inference bandwidth energy efficiency survey",
+    "technology": "PIM",
+    "expected_titles": ["2012.03112v5", "2105.03814v7"]
+  },
+  {
+    "query": "AiMX solution demonstration AI memory innovation summit",
+    "technology": "PIM",
+    "expected_titles": ["AI Infra Summit", "AiM", "AiMX"]
+  },
+  {
+    "query": "Hot Chips AiMX presentation accelerator card memory compute",
+    "technology": "PIM",
+    "expected_titles": ["hot_chips_2024_aimx_presentation", "AiMX"]
+  },
+  {
+    "query": "PIM software workload ecosystem commercialization challenge",
+    "technology": "PIM",
+    "expected_titles": ["2012.03112v5", "2105.03814v7", "AiMX"]
+  },
+  {
+    "query": "GDDR6 AiM card prototype public release SK hynix",
+    "technology": "PIM",
+    "expected_titles": ["GDDR6-AiM", "AiMX"]
   },
   {
     "query": "CXL memory expansion ecosystem and standard direction",
     "technology": "CXL",
-    "expected_titles": [
-      "2306.11227v3",
-      "2412.20249v2"
-    ]
+    "expected_titles": ["2306.11227v3", "2412.20249v2"]
+  },
+  {
+    "query": "compute express link memory pooling disaggregation data center survey",
+    "technology": "CXL",
+    "expected_titles": ["2306.11227v3", "2412.20249v2"]
+  },
+  {
+    "query": "CXL 2.0 DDR5 customer certification memory expansion product",
+    "technology": "CXL",
+    "expected_titles": ["CXL 2.0", "sk_hynix_cxl_product_intro"]
+  },
+  {
+    "query": "memory expansion coherency interconnect standard future directions",
+    "technology": "CXL",
+    "expected_titles": ["2306.11227v3", "2412.20249v2"]
+  },
+  {
+    "query": "CXL survey cache coherency protocol memory tiering architecture",
+    "technology": "CXL",
+    "expected_titles": ["2306.11227v3", "2412.20249v2"]
+  },
+  {
+    "query": "compute express link standard ecosystem CPU memory device interconnect",
+    "technology": "CXL",
+    "expected_titles": ["2306.11227v3", "2412.20249v2"]
+  },
+  {
+    "query": "SK hynix CXL DDR5 data center memory innovation certification",
+    "technology": "CXL",
+    "expected_titles": ["CXL 2.0", "sk_hynix_cxl_product_intro"]
+  },
+  {
+    "query": "memory pooling composable infrastructure CXL data center roadmap",
+    "technology": "CXL",
+    "expected_titles": ["2306.11227v3", "2412.20249v2"]
+  },
+  {
+    "query": "CXL latency interoperability standardization memory expansion risk",
+    "technology": "CXL",
+    "expected_titles": ["2306.11227v3", "2412.20249v2"]
+  },
+  {
+    "query": "full stack AI memory portfolio CXL public roadmap",
+    "technology": "CXL",
+    "expected_titles": ["CXL", "SK AI Summit", "OCP"]
   }
 ]

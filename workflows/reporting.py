@@ -85,12 +85,26 @@ def _format_table_cell(value: str, esc_func: Any) -> str:
     return escaped.replace(placeholder, "<br/>")
 
 
+def resolve_pdf_font() -> tuple[str, Path | None]:
+    candidates = [
+        ("MalgunGothic", Path("C:/Windows/Fonts/malgun.ttf")),
+        ("MalgunGothic", Path("C:/Windows/Fonts/malgunbd.ttf")),
+        ("AppleGothic", Path("/System/Library/Fonts/Supplemental/AppleGothic.ttf")),
+        ("AppleSDGothicNeo", Path("/System/Library/Fonts/AppleSDGothicNeo.ttc")),
+        ("NotoSansCJK", Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc")),
+        ("NotoSansCJK", Path("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc")),
+    ]
+    for font_name, font_path in candidates:
+        if font_path.exists():
+            return font_name, font_path
+    return "Helvetica", None
+
+
 def render_plain_text_pdf(text: str, pdf_path: Path) -> None:
     text = sanitize_markdown_for_pdf(text)
-    font_path = "/System/Library/Fonts/Supplemental/AppleGothic.ttf"
-    font_name = "AppleGothic"
-    if font_name not in pdfmetrics.getRegisteredFontNames():
-        pdfmetrics.registerFont(TTFont(font_name, font_path))
+    font_name, font_path = resolve_pdf_font()
+    if font_path and font_name not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont(font_name, str(font_path)))
     stylesheet = getSampleStyleSheet()
     title_style = ParagraphStyle("KTitle", parent=stylesheet["Title"], fontName=font_name, fontSize=18, leading=24, alignment=TA_LEFT, spaceAfter=8)
     heading_style = ParagraphStyle("KHeading", parent=stylesheet["Heading2"], fontName=font_name, fontSize=13, leading=18, textColor=colors.HexColor("#183153"), spaceBefore=8, spaceAfter=6)

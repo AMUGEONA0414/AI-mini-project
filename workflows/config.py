@@ -80,6 +80,7 @@ class WorkflowState(TypedDict, total=False):
     retrieval_metrics: dict[str, Any]
     retrieval_benchmarks: dict[str, Any]
     embedding_benchmarks: dict[str, Any]
+    generation_eval: dict[str, Any]
     selected_retrieval_strategy: str
     embedding_model: str
     embedding_candidates: list[dict[str, Any]]
@@ -99,6 +100,8 @@ EMBEDDING_CACHE_ROOT = CACHE_ROOT / "embeddings"
 CHECKPOINT_ROOT = CACHE_ROOT / "checkpoints"
 EVAL_ROOT = PROJECT_ROOT / "evaluation"
 TRACEABILITY_OUTPUT_PATH = OUTPUT_ROOT / "evidence_traceability.json"
+GOLD_REPORT_PATH = EVAL_ROOT / "gold_report.md"
+GENERATION_EVAL_OUTPUT_PATH = OUTPUT_ROOT / "generation_eval.json"
 
 DEFAULT_TECHNOLOGIES: list[Technology] = ["HBM4", "PIM", "CXL"]
 DEFAULT_COMPANIES = ["Samsung Electronics", "Micron"]
@@ -185,6 +188,7 @@ def initialize_state(
         retrieval_metrics={},
         retrieval_benchmarks={},
         embedding_benchmarks={},
+        generation_eval={},
         selected_retrieval_strategy="hybrid",
         embedding_model=OPENAI_EMBEDDING_MODEL,
         embedding_candidates=EMBEDDING_CANDIDATES,

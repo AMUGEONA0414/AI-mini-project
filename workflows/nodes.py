@@ -3,6 +3,7 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
+from .generation_eval import evaluate_generated_report, write_generation_eval
 from .shared import *
 
 
@@ -656,6 +657,8 @@ def formatting_node(state: WorkflowState) -> dict[str, Any]:
     pdf_path = OUTPUT_ROOT / "ai-mini_output.pdf"
     cleaned_report = sanitize_report_markdown(state["final_report_markdown"])
     markdown_path.write_text(cleaned_report, encoding="utf-8")
+    generation_eval = evaluate_generated_report({**state, "final_report_markdown": cleaned_report})
+    write_generation_eval(generation_eval)
     TRACEABILITY_OUTPUT_PATH.write_text(
         json.dumps(
             {
@@ -665,6 +668,7 @@ def formatting_node(state: WorkflowState) -> dict[str, Any]:
                 "selected_retrieval_strategy": state.get("selected_retrieval_strategy", ""),
                 "embedding_model": state.get("embedding_model", ""),
                 "embedding_candidates": state.get("embedding_candidates", []),
+                "generation_eval": generation_eval,
                 "evidence_traceability": state.get("evidence_traceability", {}),
                 "references": state.get("references", []),
             },
@@ -677,9 +681,11 @@ def formatting_node(state: WorkflowState) -> dict[str, Any]:
     log_progress("Formatting", f"Traceability artifact saved: {TRACEABILITY_OUTPUT_PATH}")
     notes = state.get("run_notes", []) + ["Formatting node wrote markdown and a reportlab-rendered PDF artifact."]
     notes.append(f"Traceability artifact saved to {TRACEABILITY_OUTPUT_PATH}")
+    notes.append(f"Generation evaluation saved to {GENERATION_EVAL_OUTPUT_PATH}")
     return {
         "pdf_path": str(pdf_path),
         "formatting_status": "completed",
+        "generation_eval": generation_eval,
         "run_notes": notes,
     }
 

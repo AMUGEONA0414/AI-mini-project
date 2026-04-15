@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 import re
 import subprocess
 from pathlib import Path
@@ -40,7 +41,50 @@ def extract_pdf_text(path: Path, max_chars: int = 20000) -> str:
     PDF_CACHE_ROOT.mkdir(parents=True, exist_ok=True)
     cache_file = PDF_CACHE_ROOT / f"{path.stem}.txt"
     if cache_file.exists() and cache_file.stat().st_mtime >= path.stat().st_mtime:
-        return cache_file.read_text(encoding="utf-8")[:max_chars]
+        cached_text = cache_file.read_text(encoding="utf-8")
+        if cached_text.strip():
+            return cached_text[:max_chars]
+
+    text = extract_pdf_text_with_pypdf(path)
+    if not text:
+        text = extract_pdf_text_with_pymupdf(path)
+    if not text and platform.system() == "Darwin":
+        text = extract_pdf_text_with_pdfkit(path)
+    if not text:
+        text = extract_pdf_text_with_strings(path)
+
+    compact = re.sub(r"\s+", " ", text).strip()
+    cache_file.write_text(compact, encoding="utf-8")
+    return compact[:max_chars]
+
+
+def extract_pdf_text_with_pypdf(path: Path) -> str:
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        return ""
+
+    try:
+        reader = PdfReader(str(path))
+        return "\n".join(page.extract_text() or "" for page in reader.pages)
+    except Exception:
+        return ""
+
+
+def extract_pdf_text_with_pymupdf(path: Path) -> str:
+    try:
+        import fitz
+    except ImportError:
+        return ""
+
+    try:
+        with fitz.open(str(path)) as document:
+            return "\n".join(page.get_text("text") for page in document)
+    except Exception:
+        return ""
+
+
+def extract_pdf_text_with_pdfkit(path: Path) -> str:
     try:
         swift_program = f"""
 import Foundation
@@ -61,16 +105,17 @@ if let doc = PDFDocument(url: url) {{
             text=True,
             check=True,
         )
-        text = result.stdout
+        return result.stdout
     except Exception:
-        try:
-            result = subprocess.run(["strings", "-n", "8", str(path)], capture_output=True, text=True, check=True)
-            text = result.stdout
-        except Exception:
-            text = ""
-    compact = re.sub(r"\s+", " ", text)
-    cache_file.write_text(compact, encoding="utf-8")
-    return compact[:max_chars]
+        return ""
+
+
+def extract_pdf_text_with_strings(path: Path) -> str:
+    try:
+        result = subprocess.run(["strings", "-n", "8", str(path)], capture_output=True, text=True, check=True)
+        return result.stdout
+    except Exception:
+        return ""
 
 
 def load_external_reference_pdfs(root: Path) -> list[dict[str, Any]]:
