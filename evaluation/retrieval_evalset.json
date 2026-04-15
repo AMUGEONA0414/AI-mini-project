@@ -1,0 +1,26 @@
+[
+  {
+    "query": "HBM4 packaging and thermal challenge overview",
+    "technology": "HBM4",
+    "expected_titles": [
+      "HBM4 technology overview and packaging outlook",
+      "2412.20249v2"
+    ]
+  },
+  {
+    "query": "PIM survey and architecture research trends",
+    "technology": "PIM",
+    "expected_titles": [
+      "Processing-in-memory overview for semiconductor R&D strategy",
+      "2105.03814v7"
+    ]
+  },
+  {
+    "query": "CXL memory expansion ecosystem and standard direction",
+    "technology": "CXL",
+    "expected_titles": [
+      "CXL memory expansion and ecosystem overview",
+      "2310.09385v2"
+    ]
+  }
+]

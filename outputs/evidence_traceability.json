@@ -1,0 +1,246 @@
+{
+  "retrieval_metrics": {
+    "hit_rate_at_k": 0.333,
+    "mrr": 0.333,
+    "queries": 3,
+    "k": 6,
+    "strategy": "dense",
+    "benchmarks": {
+      "dense": {
+        "hit_rate_at_k": 0.333,
+        "mrr": 0.333,
+        "queries": 3,
+        "k": 6
+      },
+      "lexical": {
+        "hit_rate_at_k": 1.0,
+        "mrr": 0.306,
+        "queries": 3,
+        "k": 6
+      },
+      "hybrid": {
+        "hit_rate_at_k": 0.333,
+        "mrr": 0.167,
+        "queries": 3,
+        "k": 6
+      }
+    }
+  },
+  "retrieval_benchmarks": {
+    "dense": {
+      "hit_rate_at_k": 0.333,
+      "mrr": 0.333,
+      "queries": 3,
+      "k": 6
+    },
+    "lexical": {
+      "hit_rate_at_k": 1.0,
+      "mrr": 0.306,
+      "queries": 3,
+      "k": 6
+    },
+    "hybrid": {
+      "hit_rate_at_k": 0.333,
+      "mrr": 0.167,
+      "queries": 3,
+      "k": 6
+    }
+  },
+  "selected_retrieval_strategy": "dense",
+  "embedding_model": "text-embedding-3-large",
+  "embedding_candidates": [
+    {
+      "provider": "openai",
+      "model": "text-embedding-3-large",
+      "status": "active",
+      "reason": "현재 코드에서 실제 호출 가능한 기본 임베딩 모델"
+    },
+    {
+      "provider": "jina",
+      "model": "jina-embeddings-v3",
+      "status": "candidate",
+      "reason": "기술 문서/검색 목적에 강점이 있어 추후 비교 후보로 유지"
+    },
+    {
+      "provider": "voyage",
+      "model": "voyage-3-large",
+      "status": "candidate",
+      "reason": "검색 특화 임베딩으로 도메인 적합성 비교 후보"
+    },
+    {
+      "provider": "bge",
+      "model": "bge-m3",
+      "status": "candidate",
+      "reason": "멀티링구얼 및 범용 dense retrieval 비교군"
+    }
+  ],
+  "evidence_traceability": {
+    "background": [
+      "https://www.digitimes.com/news/a20250724PD223/samsung-hbm4-production-2026-sk-hynix.html",
+      "https://markets.financialcontent.com/wral/article/tokenring-2026-1-2-hbm4-memory-wars-samsung-and-sk-hynix-face-off-in-the-race-to-power-next-gen-ai",
+      "https://www.linkedin.com/pulse/tech-news-micron-may-face-hbm4-development-setbacks-mass-d2rgc",
+      "https://www.digitimes.com/news/a20251104PD230/micron-hbm4-samsung-sk-hynix-nvidia.html",
+      "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, 세계 최초 ‘HBM4’ 개발 완료하고 양산 체제 구축 – SK hynix Newsroom.pdf",
+      "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, 세계 최초 ‘HBM4’ 12단 샘플 공급 – SK hynix Newsroom.pdf"
+    ],
+    "technology_sections": {
+      "HBM4": {
+        "rag_sources": [
+          "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, 세계 최초 ‘HBM4’ 개발 완료하고 양산 체제 구축 – SK hynix Newsroom.pdf",
+          "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, 세계 최초 ‘HBM4’ 12단 샘플 공급 – SK hynix Newsroom.pdf"
+        ],
+        "web_sources": [
+          "https://www.digitimes.com/news/a20250724PD223/samsung-hbm4-production-2026-sk-hynix.html",
+          "https://markets.financialcontent.com/wral/article/tokenring-2026-1-2-hbm4-memory-wars-samsung-and-sk-hynix-face-off-in-the-race-to-power-next-gen-ai"
+        ]
+      },
+      "PIM": {
+        "rag_sources": [
+          "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, CXL 2.0 기반 DDR5 고객 인증 완료 ‘데이터센터 메모리 혁신 선도’ – SK hynix Newsroom.pdf",
+          "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, 세계 최초 ‘12단 적층 HBM3E’ 양산 돌입 – SK hynix Newsroom.pdf"
+        ],
+        "web_sources": [
+          "https://thesemiconductornewsletter.substack.com/p/advanced-packaging-in-the-semiconductor",
+          "https://www.digitimes.com/news/a20260311VL206/applied-materials-sk-hynix-micron-memory-chipmakers-infrastructure.html"
+        ]
+      },
+      "CXL": {
+        "rag_sources": [
+          "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, CXL 2.0 기반 DDR5 고객 인증 완료 ‘데이터센터 메모리 혁신 선도’ – SK hynix Newsroom.pdf",
+          "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, CES 2026에서 차세대 AI 메모리 혁신 선보인다 – SK hynix Newsroom.pdf"
+        ],
+        "web_sources": [
+          "https://thesemiconductornewsletter.substack.com/p/advanced-packaging-in-the-semiconductor",
+          "https://www.micron.com/about/press/news/micron-first-to-achieve-qualification-sample-milestone"
+        ]
+      }
+    },
+    "competitor_rows": [
+      {
+        "technology": "HBM4",
+        "company": "Samsung Electronics",
+        "sources": [
+          "https://www.digitimes.com/news/a20250724PD223/samsung-hbm4-production-2026-sk-hynix.html",
+          "https://markets.financialcontent.com/wral/article/tokenring-2026-1-2-hbm4-memory-wars-samsung-and-sk-hynix-face-off-in-the-race-to-power-next-gen-ai",
+          "https://news.samsung.com/global/samsung-unveils-hbm4e-showcasing-comprehensive-ai-solutions-nvidia-partnership-and-vision-at-nvidia-gtc-2026"
+        ],
+        "reasoning": [
+          "고객 검증 또는 시스템 시연 신호"
+        ],
+        "signal_count": 4
+      },
+      {
+        "technology": "HBM4",
+        "company": "Micron",
+        "sources": [
+          "https://www.linkedin.com/pulse/tech-news-micron-may-face-hbm4-development-setbacks-mass-d2rgc",
+          "https://www.digitimes.com/news/a20251104PD230/micron-hbm4-samsung-sk-hynix-nvidia.html",
+          "https://ir.appliedmaterials.com/news-releases/news-release-details/applied-materials-and-micron-partner-advance-us-innovation-next"
+        ],
+        "reasoning": [
+          "시제품 또는 평가 보드 단계 신호"
+        ],
+        "signal_count": 3
+      },
+      {
+        "technology": "PIM",
+        "company": "Samsung Electronics",
+        "sources": [
+          "https://semiwiki.com/forum/threads/samsung-delays-hbm4-rollout-to-2026-due-to-yield-challenges-all-while-sk-hynix-strengthens-lead-in-ai-memory.23408/",
+          "https://www.trendforce.com/news/2025/08/14/news-samsung-reportedly-plans-170m-chip-packaging-rd-center-in-yokohama-opening-march-2027/",
+          "https://www.linkedin.com/posts/raghavendra-anjanappa-ba7a0432_samsung-roadmap-for-3d-ic-packaging-samsungs-activity-7328396184115433472-NN5k"
+        ],
+        "reasoning": [
+          "개념·부품 수준 공개 신호 중심"
+        ],
+        "signal_count": 3
+      },
+      {
+        "technology": "PIM",
+        "company": "Micron",
+        "sources": [
+          "https://thesemiconductornewsletter.substack.com/p/advanced-packaging-in-the-semiconductor",
+          "https://www.digitimes.com/news/a20260311VL206/applied-materials-sk-hynix-micron-memory-chipmakers-infrastructure.html",
+          "https://seekingalpha.com/article/4889484-micron-the-memory-bottleneck-is-shifting-and-market-hasnt-caught-up"
+        ],
+        "reasoning": [
+          "시제품 또는 평가 보드 단계 신호"
+        ],
+        "signal_count": 4
+      },
+      {
+        "technology": "CXL",
+        "company": "Samsung Electronics",
+        "sources": [
+          "https://www.trendforce.com/news/2025/10/17/news-samsung-unveils-cxl-roadmap-cmm-d-2-0-samples-ready-3-1-targeted-for-year-end/",
+          "https://www.linkedin.com/posts/raghavendra-anjanappa-ba7a0432_samsung-cxl-roadmap-activity-7384785706633785344-B8iv",
+          "https://www.linkedin.com/posts/heather-anne-scott_samsunggalaxys26-semiconductormanufacturing-activity-7385820768917639168-dHS6"
+        ],
+        "reasoning": [
+          "고객 검증 또는 시스템 시연 신호"
+        ],
+        "signal_count": 4
+      },
+      {
+        "technology": "CXL",
+        "company": "Micron",
+        "sources": [
+          "https://thesemiconductornewsletter.substack.com/p/advanced-packaging-in-the-semiconductor",
+          "https://www.micron.com/about/press/news/micron-first-to-achieve-qualification-sample-milestone",
+          "https://www.rdworldonline.com/the-semiconductor-roadmap/"
+        ],
+        "reasoning": [
+          "고객 검증 또는 시스템 시연 신호"
+        ],
+        "signal_count": 3
+      }
+    ],
+    "strategy": [
+      {
+        "priority": "위협도가 높은 기술 영역부터 우선적으로 추적한다.",
+        "supporting_sources": []
+      },
+      {
+        "priority": "PIM은 상용화 시점보다 생태계 선점 가능성과 응용처 확보 여부를 중심으로 추적한다.",
+        "supporting_sources": [
+          [
+            "https://semiwiki.com/forum/threads/samsung-delays-hbm4-rollout-to-2026-due-to-yield-challenges-all-while-sk-hynix-strengthens-lead-in-ai-memory.23408/",
+            "https://www.trendforce.com/news/2025/08/14/news-samsung-reportedly-plans-170m-chip-packaging-rd-center-in-yokohama-opening-march-2027/",
+            "https://www.linkedin.com/posts/raghavendra-anjanappa-ba7a0432_samsung-roadmap-for-3d-ic-packaging-samsungs-activity-7328396184115433472-NN5k"
+          ],
+          [
+            "https://thesemiconductornewsletter.substack.com/p/advanced-packaging-in-the-semiconductor",
+            "https://www.digitimes.com/news/a20260311VL206/applied-materials-sk-hynix-micron-memory-chipmakers-infrastructure.html",
+            "https://seekingalpha.com/article/4889484-micron-the-memory-bottleneck-is-shifting-and-market-hasnt-caught-up"
+          ]
+        ]
+      }
+    ]
+  },
+  "references": [
+    "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, 세계 최초 ‘HBM4’ 개발 완료하고 양산 체제 구축 – SK hynix Newsroom.pdf",
+    "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, 세계 최초 ‘HBM4’ 12단 샘플 공급 – SK hynix Newsroom.pdf",
+    "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, CXL 2.0 기반 DDR5 고객 인증 완료 ‘데이터센터 메모리 혁신 선도’ – SK hynix Newsroom.pdf",
+    "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, 세계 최초 ‘12단 적층 HBM3E’ 양산 돌입 – SK hynix Newsroom.pdf",
+    "/Users/hjcha/workspace/ai-service/langgraph-v1/mini-project/data/SK하이닉스, CES 2026에서 차세대 AI 메모리 혁신 선보인다 – SK hynix Newsroom.pdf",
+    "https://www.digitimes.com/news/a20250724PD223/samsung-hbm4-production-2026-sk-hynix.html",
+    "https://markets.financialcontent.com/wral/article/tokenring-2026-1-2-hbm4-memory-wars-samsung-and-sk-hynix-face-off-in-the-race-to-power-next-gen-ai",
+    "https://www.linkedin.com/pulse/tech-news-micron-may-face-hbm4-development-setbacks-mass-d2rgc",
+    "https://www.digitimes.com/news/a20251104PD230/micron-hbm4-samsung-sk-hynix-nvidia.html",
+    "https://news.samsung.com/global/samsung-unveils-hbm4e-showcasing-comprehensive-ai-solutions-nvidia-partnership-and-vision-at-nvidia-gtc-2026",
+    "https://www.trendforce.com/news/2025/11/04/news-samsung-reportedly-to-deliver-hbm4-samples-to-nvidia-this-month-eyes-early-2026-validation/",
+    "https://ir.appliedmaterials.com/news-releases/news-release-details/applied-materials-and-micron-partner-advance-us-innovation-next",
+    "https://thesemiconductornewsletter.substack.com/p/advanced-packaging-in-the-semiconductor",
+    "https://www.digitimes.com/news/a20260311VL206/applied-materials-sk-hynix-micron-memory-chipmakers-infrastructure.html",
+    "https://seekingalpha.com/article/4889484-micron-the-memory-bottleneck-is-shifting-and-market-hasnt-caught-up",
+    "https://www.digitimes.com/news/a20251218PD206/samsung-sk-hynix-hbm-ai-inference-data.html",
+    "https://semiwiki.com/forum/threads/samsung-delays-hbm4-rollout-to-2026-due-to-yield-challenges-all-while-sk-hynix-strengthens-lead-in-ai-memory.23408/",
+    "https://www.trendforce.com/news/2025/08/14/news-samsung-reportedly-plans-170m-chip-packaging-rd-center-in-yokohama-opening-march-2027/",
+    "https://www.linkedin.com/posts/raghavendra-anjanappa-ba7a0432_samsung-roadmap-for-3d-ic-packaging-samsungs-activity-7328396184115433472-NN5k",
+    "https://www.micron.com/about/press/news/micron-first-to-achieve-qualification-sample-milestone",
+    "https://www.rdworldonline.com/the-semiconductor-roadmap/",
+    "https://www.trendforce.com/news/2025/10/17/news-samsung-unveils-cxl-roadmap-cmm-d-2-0-samples-ready-3-1-targeted-for-year-end/",
+    "https://www.linkedin.com/posts/raghavendra-anjanappa-ba7a0432_samsung-cxl-roadmap-activity-7384785706633785344-B8iv",
+    "https://www.linkedin.com/posts/heather-anne-scott_samsunggalaxys26-semiconductormanufacturing-activity-7385820768917639168-dHS6"
+  ]
+}
