@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -17,17 +18,17 @@ except ModuleNotFoundError:  # pragma: no cover
 
 def ensure_reportlab_importable() -> None:
     version = f"{sys.version_info.major}.{sys.version_info.minor}"
-    candidate_paths = [
-        Path.home() / "Library" / "Python" / version / "lib" / "python" / "site-packages",
-        Path.home() / ".pyenv" / "versions" / version / "lib" / f"python{version}" / "site-packages",
-    ]
-    pyenv_versions_root = Path.home() / ".pyenv" / "versions"
-    if pyenv_versions_root.exists():
-        for version_dir in pyenv_versions_root.iterdir():
-            if not version_dir.is_dir():
-                continue
-            py_dirs = list(version_dir.glob("lib/python*/site-packages"))
-            candidate_paths.extend(py_dirs)
+    candidate_paths = []
+    virtual_env = os.getenv("VIRTUAL_ENV")
+    if virtual_env:
+        candidate_paths.append(Path(virtual_env) / "lib" / f"python{version}" / "site-packages")
+    candidate_paths.extend(
+        [
+            Path(sys.prefix) / "lib" / f"python{version}" / "site-packages",
+            Path.home() / "Library" / "Python" / version / "lib" / "python" / "site-packages",
+            Path.home() / ".pyenv" / "versions" / sys.version.split()[0] / "lib" / f"python{version}" / "site-packages",
+        ]
+    )
     for candidate in candidate_paths:
         candidate_str = str(candidate)
         if candidate.exists() and candidate_str not in sys.path:
@@ -110,6 +111,7 @@ RAG_TOP_N_DOCS = 2
 MIN_WEB_TRUST_SCORE = 0.55
 EMBEDDING_BATCH_SIZE = 16
 WEB_SEARCH_MAX_WORKERS = 4
+MIN_RETRIEVAL_EVAL_QUERIES = 10
 COMPANY_DISPLAY_NAMES = {
     "Samsung Electronics": "삼성전자",
     "Micron": "마이크론",
