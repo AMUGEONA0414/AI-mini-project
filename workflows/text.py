@@ -123,6 +123,29 @@ def normalize_report_structure(text: str) -> str:
     return "\n".join(normalized)
 
 
+def repair_markdown_table_continuations(text: str) -> str:
+    lines = text.splitlines()
+    repaired: list[str] = []
+    in_table = False
+    for raw_line in lines:
+        stripped = raw_line.strip()
+        if stripped.startswith("|") and stripped.endswith("|"):
+            repaired.append(stripped)
+            in_table = True
+            continue
+        if not stripped:
+            repaired.append(raw_line)
+            in_table = False
+            continue
+        if in_table and repaired and repaired[-1].strip().startswith("|") and not stripped.startswith("|") and not stripped.startswith("## "):
+            repaired[-1] = repaired[-1] + "<br/>" + stripped
+            continue
+        repaired.append(raw_line)
+        if not stripped.startswith("|"):
+            in_table = False
+    return "\n".join(repaired)
+
+
 def ensure_report_header(text: str) -> str:
     report_title = "# SK하이닉스 관점 반도체 기술 전략 분석 보고서"
     report_date = f"작성일: {date.today().isoformat()}"
@@ -140,6 +163,7 @@ def sanitize_report_markdown(text: str) -> str:
     cleaned = re.sub(r"^\s*```\s*$", "", cleaned, flags=re.MULTILINE)
     cleaned = re.sub(r"\*\*(.*?)\*\*", r"\1", cleaned)
     cleaned = re.sub(r"`([^`]*)`", r"\1", cleaned)
+    cleaned = repair_markdown_table_continuations(cleaned)
     cleaned = normalize_report_structure(cleaned)
     cleaned = ensure_report_header(cleaned)
     return cleaned.strip()

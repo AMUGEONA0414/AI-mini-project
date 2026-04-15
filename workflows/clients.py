@@ -4,6 +4,7 @@ import json
 import os
 import urllib.error
 import urllib.request
+from functools import lru_cache
 from typing import Any
 
 from .config import (
@@ -150,13 +151,42 @@ def _normalize_hf_embedding_output(data: Any, batch_size: int) -> list[list[floa
     raise RuntimeError("Hugging Face batch embedding 응답 형식을 해석할 수 없습니다.")
 
 
+@lru_cache(maxsize=2)
+def _load_sentence_transformer(model: str) -> Any:
+    from sentence_transformers import SentenceTransformer
+
+    return SentenceTransformer(model, trust_remote_code=True)
+
+
+def call_local_bge_embeddings(texts: list[str], *, model: str) -> list[list[float]]:
+    if not texts:
+        return []
+    log_progress("Embedding", f"Local bge embedding start: model={model} count={len(texts)}")
+    encoder = _load_sentence_transformer(model)
+    vectors = encoder.encode(
+        texts,
+        normalize_embeddings=True,
+        convert_to_numpy=True,
+        show_progress_bar=False,
+    )
+    log_progress("Embedding", "Local bge embedding completed")
+    return vectors.tolist()
+
+
 def call_huggingface_embeddings(texts: list[str], *, model: str) -> list[list[float]]:
     if not texts:
         return []
+    if model.lower().startswith("baai/bge"):
+        return call_local_bge_embeddings(texts, model=model)
     log_progress("Embedding", f"HF embedding request start: model={model} count={len(texts)}")
     request = urllib.request.Request(
-        f"https://router.huggingface.co/hf-inference/models/{model}",
-        data=json.dumps({"inputs": texts if len(texts) > 1 else texts[0], "normalize": True}).encode("utf-8"),
+        f"https://router.huggingface.co/hf-inference/pipeline/feature-extraction/{model}",
+        data=json.dumps(
+            {
+                "inputs": texts if len(texts) > 1 else texts[0],
+                "options": {"wait_for_model": True},
+            }
+        ).encode("utf-8"),
         headers={"Authorization": f"Bearer {require_huggingface_api_key()}", "Content-Type": "application/json"},
         method="POST",
     )

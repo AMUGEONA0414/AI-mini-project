@@ -121,10 +121,10 @@ COMPANY_DISPLAY_NAMES = {
     "SK hynix": "SK하이닉스",
 }
 OPENAI_MODEL = "gpt-4.1-mini"
-EMBEDDING_MODEL = "bge_m3"
+EMBEDDING_MODEL = "BAAI/bge-m3"
 RETRIEVAL_STRATEGIES = ("dense", "lexical", "hybrid")
 EMBEDDING_CANDIDATES = [
-    {"provider": "openai", "model": "bge_m3", "status": "active", "reason": "최종 선정된 임베딩 모델"},
+    {"provider": "huggingface", "model": "BAAI/bge-m3", "status": "active", "reason": "최종 선정된 임베딩 모델"},
 ]
 TAVILY_API_URL = "https://api.tavily.com/search"
 RETRIEVAL_EVALSET_PATH = EVAL_ROOT / "retrieval_evalset.json"

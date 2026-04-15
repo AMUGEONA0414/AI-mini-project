@@ -303,19 +303,25 @@ def cosine_similarity(left: list[float], right: list[float]) -> float:
     return numerator / (left_norm * right_norm)
 
 
-def compute_retrieval_metrics(documents: list[dict[str, object]], *, chunked_corpus: list[dict[str, object]] | None = None, chunk_embeddings: dict[str, list[float]] | None = None, embedding_model: str = EMBEDDING_MODEL) -> dict[str, object]:
+def compute_retrieval_metrics(documents: list[dict[str, object]], *, chunked_corpus: list[dict[str, object]] | None = None, chunk_embeddings: dict[str, list[float]] | None = None, embedding_model: str | None = EMBEDDING_MODEL) -> dict[str, object]:
     log_progress("RAG", "Computing retrieval metrics")
     ensure_retrieval_evalset()
     evalset = json.loads(RETRIEVAL_EVALSET_PATH.read_text(encoding="utf-8"))
     chunked_corpus = chunked_corpus or build_chunked_corpus(documents)
     doc_lookup = {doc["path"]: doc for doc in documents}
-    if chunk_embeddings is None:
+    use_embeddings = bool(embedding_model)
+    if use_embeddings and chunk_embeddings is None:
         embedding_map = get_embeddings([item["text"] for item in chunked_corpus], model=embedding_model, input_type="document")
         chunk_embeddings = {item["chunk_id"]: embedding_map[item["text"]] for item in chunked_corpus}
-    query_texts = [row["query"] for row in evalset]
-    query_embedding_map = get_embeddings(query_texts, model=embedding_model, input_type="query")
+    query_embedding_map = {}
+    if use_embeddings:
+        query_texts = [row["query"] for row in evalset]
+        query_embedding_map = get_embeddings(query_texts, model=embedding_model, input_type="query")
     benchmarks: dict[str, object] = {}
     for strategy in RETRIEVAL_STRATEGIES:
+        if strategy in {"dense", "hybrid"} and not use_embeddings:
+            benchmarks[strategy] = {"hit_rate_at_k": 0.0, "mrr": 0.0, "queries": len(evalset), "k": RAG_TOP_K}
+            continue
         hits = 0
         reciprocal_sum = 0.0
         evaluated = 0
@@ -340,7 +346,7 @@ def compute_retrieval_metrics(documents: list[dict[str, object]], *, chunked_cor
         selected_strategy = "hybrid"
     metrics = dict(benchmarks[selected_strategy])
     metrics["strategy"] = selected_strategy
-    metrics["embedding_model"] = embedding_model
+    metrics["embedding_model"] = embedding_model or "lexical-only"
     metrics["benchmarks"] = benchmarks
     metrics["insufficient_evalset"] = insufficient_evalset
     metrics["evalset_size"] = len(evalset)
@@ -371,14 +377,15 @@ def available_embedding_candidates() -> list[dict[str, object]]:
     return candidates
 
 
-def benchmark_embedding_models(*, documents: list[dict[str, object]], chunked_corpus: list[dict[str, object]]) -> tuple[str, dict[str, object]]:
+def benchmark_embedding_models(*, documents: list[dict[str, object]], chunked_corpus: list[dict[str, object]]) -> tuple[str | None, dict[str, object]]:
     log_progress("RAG", "Benchmarking embedding candidates")
     candidates = available_embedding_candidates()
     if not candidates:
         raise RuntimeError("실행 가능한 embedding candidate가 없습니다.")
     benchmarks: dict[str, object] = {}
-    best_model = EMBEDDING_MODEL
+    best_model: str | None = EMBEDDING_MODEL
     best_key = (-1.0, -1.0)
+    success_count = 0
     for candidate in candidates:
         model = candidate["model"]
         try:
@@ -387,12 +394,15 @@ def benchmark_embedding_models(*, documents: list[dict[str, object]], chunked_co
             metrics = compute_retrieval_metrics(documents, chunked_corpus=chunked_corpus, chunk_embeddings=chunk_embeddings, embedding_model=model)
             benchmarks[model] = {"provider": candidate["provider"], "strategy": metrics["strategy"], "hit_rate_at_k": metrics["hit_rate_at_k"], "mrr": metrics["mrr"], "strategy_benchmarks": metrics["benchmarks"]}
             score_key = (metrics["mrr"], metrics["hit_rate_at_k"])
+            success_count += 1
             if score_key > best_key:
                 best_key = score_key
                 best_model = model
         except Exception as exc:
             benchmarks[model] = {"provider": candidate["provider"], "error": str(exc)}
             log_progress("RAG", f"Embedding benchmark failed for {model}: {exc}")
+    if success_count == 0:
+        best_model = None
     log_progress("RAG", "Embedding benchmarks ready: " + ", ".join((f"{model}=MRR {item['mrr']} HitRate@{RAG_TOP_K} {item['hit_rate_at_k']}" if "mrr" in item else f"{model}=failed") for model, item in benchmarks.items()) + f" | selected={best_model}")
     return best_model, benchmarks
 

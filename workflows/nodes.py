@@ -50,17 +50,21 @@ def rag_agent_node(state: WorkflowState) -> dict[str, Any]:
         documents=corpus,
         chunked_corpus=chunked_corpus,
     )
-    chunk_embedding_map = get_embeddings(
-        [chunk["text"] for chunk in chunked_corpus],
-        model=selected_embedding_model,
-        input_type="document",
-    )
-    chunk_embeddings = {chunk["chunk_id"]: chunk_embedding_map[chunk["text"]] for chunk in chunked_corpus}
+    chunk_embeddings: dict[str, list[float]] = {}
+    if selected_embedding_model:
+        chunk_embedding_map = get_embeddings(
+            [chunk["text"] for chunk in chunked_corpus],
+            model=selected_embedding_model,
+            input_type="document",
+        )
+        chunk_embeddings = {chunk["chunk_id"]: chunk_embedding_map[chunk["text"]] for chunk in chunked_corpus}
+    else:
+        log_progress("RAG", "No embedding backend available for the selected bge model; falling back to lexical retrieval.")
     doc_lookup = {doc["path"]: doc for doc in corpus}
     retrieval_metrics = compute_retrieval_metrics(
         corpus,
         chunked_corpus=chunked_corpus,
-        chunk_embeddings=chunk_embeddings,
+        chunk_embeddings=chunk_embeddings or None,
         embedding_model=selected_embedding_model,
     )
     selected_strategy = retrieval_metrics.get("strategy", "hybrid")
@@ -70,16 +74,20 @@ def rag_agent_node(state: WorkflowState) -> dict[str, Any]:
         "PIM": f"PIM processing-in-memory AiM architecture survey research trend {display_company_name(state['focal_company'])}",
         "CXL": f"CXL compute express link memory expansion ecosystem standard direction {display_company_name(state['focal_company'])}",
     }
-    query_embedding_map = get_embeddings(
-        list(query_texts.values()),
-        model=selected_embedding_model,
-        input_type="query",
+    query_embedding_map = (
+        get_embeddings(
+            list(query_texts.values()),
+            model=selected_embedding_model,
+            input_type="query",
+        )
+        if selected_embedding_model and selected_strategy != "lexical"
+        else {}
     )
 
     for tech in state["target_technologies"]:
         log_progress("RAG", f"Retrieving documents for {tech}")
         query_text = query_texts[tech]
-        query_embedding = query_embedding_map[query_text] if selected_strategy != "lexical" else None
+        query_embedding = query_embedding_map[query_text] if selected_strategy != "lexical" and query_text in query_embedding_map else None
         selected_docs = rank_documents_for_strategy(
             strategy=selected_strategy,
             query_text=query_text,
