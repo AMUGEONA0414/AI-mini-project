@@ -20,8 +20,14 @@ def ensure_reportlab_importable() -> None:
     candidate_paths = [
         Path.home() / "Library" / "Python" / version / "lib" / "python" / "site-packages",
         Path.home() / ".pyenv" / "versions" / version / "lib" / f"python{version}" / "site-packages",
-        Path.home() / ".pyenv" / "versions" / "3.12.12" / "lib" / "python3.12" / "site-packages",
     ]
+    pyenv_versions_root = Path.home() / ".pyenv" / "versions"
+    if pyenv_versions_root.exists():
+        for version_dir in pyenv_versions_root.iterdir():
+            if not version_dir.is_dir():
+                continue
+            py_dirs = list(version_dir.glob("lib/python*/site-packages"))
+            candidate_paths.extend(py_dirs)
     for candidate in candidate_paths:
         candidate_str = str(candidate)
         if candidate.exists() and candidate_str not in sys.path:
