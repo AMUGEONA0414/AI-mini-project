@@ -1,6 +1,6 @@
 # Subject
 
-SK hynix 관점에서 HBM4, PIM/AiM, CXL 관련 공개 자료와 최신 웹 신호를 수집하고, 경쟁사 기술 성숙도와 위협 수준을 비교해 기술 전략 분석 보고서를 생성하는 Agentic Workflow 프로젝트입니다.
+SK hynix 관점에서 HBM4, PIM/AiM, CXL 등 관련 공개 자료와 최신 웹 신호를 수집하고, 경쟁사 기술 성숙도와 위협 수준을 비교해 기술 전략 분석 보고서를 생성하는 Agentic Workflow 프로젝트입니다.
 
 ## Overview
 
